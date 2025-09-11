@@ -1,0 +1,541 @@
+@baseUrl = http://localhost:3334
+@contentType = application/json
+
+
+
+### Criar usuário cliente
+POST {{baseUrl}}/users
+Content-Type: {{contentType}}
+
+{
+  "name": "João Silva",
+  "email": "joao@email.com",
+  "password": "123456",
+  "role": "CLIENT"
+}
+
+### Criar usuário barbeiro
+POST {{baseUrl}}/users
+Content-Type: {{contentType}}
+
+{
+  "name": "Carlos Barbeiro",
+  "email": "carlos1@barber.com",
+  "password": "123456",
+  "role": "BARBER"
+}
+
+### Criar usuário admin
+POST {{baseUrl}}/users
+Content-Type: {{contentType}}
+
+{
+  "name": "Admin Sistema",
+  "email": "admin@barber.com",
+  "password": "123456",
+  "role": "ADMIN"
+}
+
+### Buscar usuário por ID
+GET {{baseUrl}}/users/{{userId}}
+
+### Buscar usuário por email
+GET {{baseUrl}}/users/email/joao@email.com
+
+### Atualizar usuário
+PUT {{baseUrl}}/users/{{userId}}
+Content-Type: {{contentType}}
+
+{
+  "name": "João Silva Atualizado",
+  "email": "joao.novo@email.com"
+}
+
+### Deletar usuário
+DELETE {{baseUrl}}/users/{{userId}}
+
+# ===========================================
+# CLIENTES
+# ===========================================
+
+### Criar perfil de cliente
+POST {{baseUrl}}/clients
+Content-Type: {{contentType}}
+
+{
+  "userId": "{{userId}}",
+  "phone": "11999999999",
+  "birthDate": "1990-05-15T00:00:00Z"
+}
+
+### Buscar cliente por ID
+GET {{baseUrl}}/clients/{{clientId}}
+
+### Buscar cliente por usuário
+GET {{baseUrl}}/clients/user/{{userId}}
+
+### Atualizar cliente
+PUT {{baseUrl}}/clients/{{clientId}}
+Content-Type: {{contentType}}
+
+{
+  "phone": "11988888888",
+  "birthDate": "1990-05-20T00:00:00Z"
+}
+
+### Deletar cliente
+DELETE {{baseUrl}}/clients/{{clientId}}
+
+# ===========================================
+# BARBEIROS
+# ===========================================
+
+### Criar perfil de barbeiro
+POST {{baseUrl}}/barbers
+Content-Type: {{contentType}}
+
+{
+  "userId": "e7878c94-e6ff-424a-aa41-106d9d71dd9a",
+  "phone": "11977777777",
+  "specialties": "Corte, Barba, Sobrancelha",
+  "isActive": true
+}
+
+### Listar barbeiros ativos
+GET {{baseUrl}}/barbers
+
+### Listar barbeiros por especialidade
+GET {{baseUrl}}/barbers?specialty=Corte
+
+### Buscar barbeiro por ID
+GET {{baseUrl}}/barbers/{{barberId}}
+
+### Buscar barbeiro por usuário
+GET {{baseUrl}}/barbers/user/{{barberUserId}}
+
+### Atualizar barbeiro
+PUT {{baseUrl}}/barbers/{{barberId}}
+Content-Type: {{contentType}}
+
+{
+  "phone": "11966666666",
+  "specialties": "Corte, Barba, Sobrancelha, Barboterapia",
+  "isActive": true
+}
+
+### Adicionar especialidade
+POST {{baseUrl}}/barbers/{{barberId}}/specialties
+Content-Type: {{contentType}}
+
+{
+  "specialty": "Barboterapia"
+}
+
+### Remover especialidade
+DELETE {{baseUrl}}/barbers/{{barberId}}/specialties
+Content-Type: {{contentType}}
+
+{
+  "specialty": "Barboterapia"
+}
+
+### Deletar barbeiro
+DELETE {{baseUrl}}/barbers/{{barberId}}
+
+# ===========================================
+# SERVIÇOS
+# ===========================================
+
+### Criar serviço
+POST {{baseUrl}}/services
+Content-Type: {{contentType}}
+
+{
+  "name": "Corte Masculino",
+  "description": "Corte tradicional masculino com tesoura e máquina",
+  "duration": 30,
+  "price": 25.00,
+  "barberId": "e7878c94-e6ff-424a-aa41-106d9d71dd9a",
+  "isActive": true
+}
+
+### Criar outro serviço
+POST {{baseUrl}}/services
+Content-Type: {{contentType}}
+
+{
+  "name": "Barba Completa",
+  "description": "Aparar e modelar barba com navalha",
+  "duration": 45,
+  "price": 35.00,
+  "barberId": "e7878c94-e6ff-424a-aa41-106d9d71dd9a",
+  "isActive": true
+}
+
+### Listar todos os serviços
+GET {{baseUrl}}/services
+
+### Listar serviços por barbeiro
+GET {{baseUrl}}/services?barberId={{barberId}}
+
+### Buscar serviço por ID
+GET {{baseUrl}}/services/{{serviceId}}
+
+### Atualizar serviço
+PUT {{baseUrl}}/services/{{serviceId}}
+Content-Type: {{contentType}}
+
+{
+  "name": "Corte Masculino Premium",
+  "description": "Corte tradicional masculino com tesoura e máquina + finalização",
+  "duration": 45,
+  "price": 35.00,
+  "isActive": true
+}
+
+### Deletar serviço
+DELETE {{baseUrl}}/services/{{serviceId}}
+
+# ===========================================
+# AGENDAMENTOS
+# ===========================================
+
+### Criar agendamento
+POST {{baseUrl}}/bookings
+Content-Type: {{contentType}}
+
+{
+  "clientId": "{{clientId}}",
+  "barberId": "{{barberId}}",
+  "serviceId": "{{serviceId}}",
+  "date": "2024-12-15T10:00:00Z",
+  "startTime": "10:00",
+  "endTime": "10:30",
+  "notes": "Primeira vez, preferência por corte mais curto"
+}
+
+### Criar outro agendamento
+POST {{baseUrl}}/bookings
+Content-Type: {{contentType}}
+
+{
+  "clientId": "{{clientId}}",
+  "barberId": "{{barberId}}",
+  "serviceId": "{{serviceId2}}",
+  "date": "2024-12-16T14:00:00Z",
+  "startTime": "14:00",
+  "endTime": "14:45",
+  "notes": "Aparar barba"
+}
+
+### Listar agendamentos por cliente
+GET {{baseUrl}}/bookings?clientId={{clientId}}
+
+### Listar agendamentos por barbeiro
+GET {{baseUrl}}/bookings?barberId={{barberId}}
+
+### Listar agendamentos por período
+GET {{baseUrl}}/bookings?startDate=2024-12-15&endDate=2024-12-20
+
+### Buscar agendamento por ID
+GET {{baseUrl}}/bookings/{{bookingId}}
+
+### Atualizar agendamento
+PUT {{baseUrl}}/bookings/{{bookingId}}
+Content-Type: {{contentType}}
+
+{
+  "date": "2024-12-15T11:00:00Z",
+  "startTime": "11:00",
+  "endTime": "11:30",
+  "notes": "Horário alterado para 11h"
+}
+
+### Confirmar agendamento
+POST {{baseUrl}}/bookings/{{bookingId}}/confirm
+
+### Cancelar agendamento
+POST {{baseUrl}}/bookings/{{bookingId}}/cancel
+
+### Marcar agendamento como concluído
+POST {{baseUrl}}/bookings/{{bookingId}}/complete
+
+### Verificar disponibilidade do barbeiro
+POST {{baseUrl}}/bookings/check-availability
+Content-Type: {{contentType}}
+
+{
+  "barberId": "{{barberId}}",
+  "date": "2024-12-15T10:00:00Z",
+  "serviceId": "{{serviceId}}"
+}
+
+### Obter horários disponíveis do barbeiro para um serviço específico
+POST {{baseUrl}}/bookings/available-slots
+Content-Type: {{contentType}}
+
+{
+  "barberId": "076cbf7f-e3ed-4670-92a2-9e4a378fb6f4",
+  "serviceId": "0ddee15d-4347-48d7-9632-31046863b72d",
+  "date": "2025-09-10T00:00:00Z"
+}
+
+### Deletar agendamento
+DELETE {{baseUrl}}/bookings/{{bookingId}}
+
+# ===========================================
+# AVALIAÇÕES
+# ===========================================
+
+### Criar avaliação
+POST {{baseUrl}}/reviews
+Content-Type: {{contentType}}
+
+{
+  "clientId": "{{clientId}}",
+  "barberId": "{{barberId}}",
+  "bookingId": "{{bookingId}}",
+  "rating": 5,
+  "comment": "Excelente atendimento! Corte perfeito e muito profissional."
+}
+
+### Criar outra avaliação
+POST {{baseUrl}}/reviews
+Content-Type: {{contentType}}
+
+{
+  "clientId": "{{clientId}}",
+  "barberId": "{{barberId}}",
+  "bookingId": "{{bookingId2}}",
+  "rating": 4,
+  "comment": "Muito bom, mas demorou um pouco mais que o esperado."
+}
+
+### Listar avaliações por barbeiro
+GET {{baseUrl}}/reviews?barberId={{barberId}}
+
+### Listar avaliações por cliente
+GET {{baseUrl}}/reviews?clientId={{clientId}}
+
+### Buscar avaliação por ID
+GET {{baseUrl}}/reviews/{{reviewId}}
+
+### Atualizar avaliação
+PUT {{baseUrl}}/reviews/{{reviewId}}
+Content-Type: {{contentType}}
+
+{
+  "rating": 5,
+  "comment": "Excelente atendimento! Corte perfeito e muito profissional. Recomendo!"
+}
+
+### Buscar média de avaliações do barbeiro
+GET {{baseUrl}}/reviews/barber/{{barberId}}/average-rating
+
+### Deletar avaliação
+DELETE {{baseUrl}}/reviews/{{reviewId}}
+
+# ===========================================
+# TESTES DE CENÁRIOS COMPLETOS
+# ===========================================
+
+### Cenário 1: Cliente faz primeiro agendamento
+# 1. Criar usuário cliente
+POST {{baseUrl}}/users
+Content-Type: {{contentType}}
+
+{
+  "name": "Maria Santos",
+  "email": "maria@email.com",
+  "password": "123456",
+  "role": "CLIENT"
+}
+
+# 2. Criar perfil de cliente
+POST {{baseUrl}}/clients
+Content-Type: {{contentType}}
+
+{
+  "userId": "{{userId}}",
+  "phone": "11955555555",
+  "birthDate": "1985-03-10T00:00:00Z"
+}
+
+# 3. Verificar horários disponíveis para o serviço
+POST {{baseUrl}}/bookings/available-slots
+Content-Type: {{contentType}}
+
+{
+  "barberId": "{{barberId}}",
+  "serviceId": "{{serviceId}}",
+  "date": "2024-12-20T00:00:00Z"
+}
+
+# 4. Fazer agendamento
+POST {{baseUrl}}/bookings
+Content-Type: {{contentType}}
+
+{
+  "clientId": "{{clientId}}",
+  "barberId": "{{barberId}}",
+  "serviceId": "{{serviceId}}",
+  "date": "2024-12-20T09:00:00Z",
+  "startTime": "09:00",
+  "endTime": "09:30",
+  "notes": "Primeira vez na barbearia"
+}
+
+# 5. Confirmar agendamento
+POST {{baseUrl}}/bookings/{{bookingId}}/confirm
+
+# 6. Marcar como concluído
+POST {{baseUrl}}/bookings/{{bookingId}}/complete
+
+# 7. Avaliar serviço
+POST {{baseUrl}}/reviews
+Content-Type: {{contentType}}
+
+{
+  "clientId": "{{clientId}}",
+  "barberId": "{{barberId}}",
+  "bookingId": "{{bookingId}}",
+  "rating": 5,
+  "comment": "Atendimento excelente! Recomendo!"
+}
+
+### Cenário 2: Barbeiro gerencia sua agenda
+# 1. Listar agendamentos do barbeiro
+GET {{baseUrl}}/bookings?barberId={{barberId}}
+
+# 2. Listar agendamentos por data
+GET {{baseUrl}}/bookings?barberId={{barberId}}&startDate=2024-12-15&endDate=2024-12-20
+
+# 3. Atualizar horário de um agendamento
+PUT {{baseUrl}}/bookings/{{bookingId}}
+Content-Type: {{contentType}}
+
+{
+  "startTime": "09:30",
+  "endTime": "10:00",
+  "notes": "Horário ajustado"
+}
+
+### Cenário 3: Cliente gerencia seus agendamentos
+# 1. Listar agendamentos do cliente
+GET {{baseUrl}}/bookings?clientId={{clientId}}
+
+# 2. Cancelar um agendamento
+POST {{baseUrl}}/bookings/{{bookingId}}/cancel
+
+# 3. Fazer novo agendamento
+POST {{baseUrl}}/bookings
+Content-Type: {{contentType}}
+
+{
+  "clientId": "{{clientId}}",
+  "barberId": "{{barberId}}",
+  "serviceId": "{{serviceId2}}",
+  "date": "2024-12-25T15:00:00Z",
+  "startTime": "15:00",
+  "endTime": "15:45",
+  "notes": "Agendamento de Natal"
+}
+
+# ===========================================
+# HORÁRIOS DISPONÍVEIS - NOVO ENDPOINT
+# ===========================================
+
+### Obter horários disponíveis para corte de 30min
+POST {{baseUrl}}/bookings/available-slots
+Content-Type: {{contentType}}
+
+{
+  "barberId": "{{barberId}}",
+  "serviceId": "{{serviceId}}",
+  "date": "2024-12-15T00:00:00Z"
+}
+
+### Obter horários disponíveis para barba de 45min
+POST {{baseUrl}}/bookings/available-slots
+Content-Type: {{contentType}}
+
+{
+  "barberId": "{{barberId}}",
+  "serviceId": "{{serviceId2}}",
+  "date": "2024-12-15T00:00:00Z"
+}
+
+### Obter horários disponíveis para outro dia
+POST {{baseUrl}}/bookings/available-slots
+Content-Type: {{contentType}}
+
+{
+  "barberId": "{{barberId}}",
+  "serviceId": "{{serviceId}}",
+  "date": "2024-12-16T00:00:00Z"
+}
+
+### Teste: Serviço inexistente
+POST {{baseUrl}}/bookings/available-slots
+Content-Type: {{contentType}}
+
+{
+  "barberId": "{{barberId}}",
+  "serviceId": "00000000-0000-0000-0000-000000000000",
+  "date": "2024-12-15T00:00:00Z"
+}
+
+# ===========================================
+# TESTES DE VALIDAÇÃO E ERROS
+# ===========================================
+
+### Teste: Email duplicado
+POST {{baseUrl}}/users
+Content-Type: {{contentType}}
+
+{
+  "name": "João Duplicado",
+  "email": "joao@email.com",
+  "password": "123456",
+  "role": "CLIENT"
+}
+
+### Teste: Horário inválido (fora do horário de funcionamento)
+POST {{baseUrl}}/bookings
+Content-Type: {{contentType}}
+
+{
+  "clientId": "{{clientId}}",
+  "barberId": "{{barberId}}",
+  "serviceId": "{{serviceId}}",
+  "date": "2024-12-15T06:00:00Z",
+  "startTime": "06:00",
+  "endTime": "06:30",
+  "notes": "Horário inválido"
+}
+
+### Teste: Rating inválido (fora do range 1-5)
+POST {{baseUrl}}/reviews
+Content-Type: {{contentType}}
+
+{
+  "clientId": "{{clientId}}",
+  "barberId": "{{barberId}}",
+  "bookingId": "{{bookingId}}",
+  "rating": 6,
+  "comment": "Rating inválido"
+}
+
+### Teste: Buscar recurso inexistente
+GET {{baseUrl}}/users/00000000-0000-0000-0000-000000000000
+
+### Teste: Dados inválidos
+POST {{baseUrl}}/users
+Content-Type: {{contentType}}
+
+{
+  "name": "",
+  "email": "email-invalido",
+  "password": "123",
+  "role": "INVALID_ROLE"
+}
