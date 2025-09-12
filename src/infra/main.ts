@@ -11,7 +11,12 @@ async function bootstrap() {
 
   // Configuração do CORS
   app.enableCors({
-    origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
+    origin: [
+      'http://localhost:3000', 
+      'http://127.0.0.1:3000',
+      'https://barber-app-frontend.vercel.app', // Frontend na Vercel
+      /^https:\/\/.*\.vercel\.app$/, // Qualquer subdomínio da Vercel
+    ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
