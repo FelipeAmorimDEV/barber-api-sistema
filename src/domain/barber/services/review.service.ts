@@ -58,11 +58,11 @@ export class ReviewService {
   }
 
   async findReviewsByBarberId(barberId: string, page: number = 1): Promise<Review[]> {
-    return this.reviewRepository.findByBarberId(barberId, { page })
+    return this.reviewRepository.findByBarberId(barberId, page)
   }
 
   async findReviewsByClientId(clientId: string, page: number = 1): Promise<Review[]> {
-    return this.reviewRepository.findByClientId(clientId, { page })
+    return this.reviewRepository.findByClientId(clientId, page)
   }
 
   async updateReview(id: string, data: Partial<{

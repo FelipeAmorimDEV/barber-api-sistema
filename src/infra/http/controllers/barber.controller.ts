@@ -1,11 +1,15 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Put, Delete, UsePipes, Query } from '@nestjs/common'
 import { BarberService } from '@/domain/barber/services/barber.service'
+import { ReviewService } from '@/domain/barber/services/review.service'
 import { CreateBarberDto, createBarberSchema } from '../dtos/create-barber.dto'
 import { ZodValidationPipe } from '../pipes/zod-validation-pipe'
 
 @Controller('/barbers')
 export class BarberController {
-  constructor(private barberService: BarberService) {}
+  constructor(
+    private barberService: BarberService,
+    private reviewService: ReviewService
+  ) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -62,6 +66,12 @@ export class BarberController {
       throw result.value
     }
 
+    // Buscar as avaliações do barbeiro
+    const reviews = await this.reviewService.findReviewsByBarberId(id, 1)
+    
+    // Calcular a média de avaliações
+    const averageRating = await this.reviewService.getBarberAverageRating(id)
+
     return {
       barber: {
         id: result.value.id.toString(),
@@ -75,7 +85,18 @@ export class BarberController {
           name: result.value.user.name,
           email: result.value.user.email,
           avatar: result.value.user.avatar
-        } : null
+        } : null,
+        reviews: reviews.map(review => ({
+          id: review.id.toString(),
+          clientId: review.clientId,
+          barberId: review.barberId,
+          bookingId: review.bookingId,
+          rating: review.rating,
+          comment: review.comment,
+          createdAt: review.createdAt,
+        })),
+        averageRating: Math.round(averageRating * 100) / 100, // Arredondar para 2 casas decimais
+        totalReviews: reviews.length
       }
     }
   }
