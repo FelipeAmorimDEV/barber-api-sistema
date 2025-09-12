@@ -27,6 +27,12 @@ export class BookingService {
     status: BookingStatus
     notes?: string
   }): Promise<Either<BarberNotAvailableError | InvalidTimeSlotError, Booking>> {
+    console.log('🔍 Debug createBooking:')
+    console.log('  Data recebida:', data.date)
+    console.log('  StartTime:', data.startTime)
+    console.log('  EndTime:', data.endTime)
+    console.log('  Tipo da data:', typeof data.date)
+
     // Verificar se o barbeiro está disponível no horário
     const isAvailable = await this.checkBarberAvailability(
       data.barberId,
@@ -35,14 +41,20 @@ export class BookingService {
       data.endTime
     )
 
+    console.log('  Barbeiro disponível?', isAvailable)
+
     if (!isAvailable) {
+      console.log('  ❌ Barbeiro não disponível')
       return left(new BarberNotAvailableError())
     }
 
     // Validar se o horário é válido (não no passado, horário de funcionamento, etc.)
     const isValidTime = this.validateTimeSlot(data.date, data.startTime, data.endTime)
     
+    console.log('  Horário válido?', isValidTime)
+    
     if (!isValidTime) {
+      console.log('  ❌ Horário inválido')
       return left(new InvalidTimeSlotError())
     }
 
@@ -193,20 +205,40 @@ export class BookingService {
     endTime: string,
     excludeBookingId?: string
   ): Promise<boolean> {
+    console.log('🔍 Debug checkBarberAvailability:')
+    console.log('  BarberId:', barberId)
+    console.log('  Date:', date)
+    console.log('  StartTime:', startTime)
+    console.log('  EndTime:', endTime)
+    
     const existingBookings = await this.bookingRepository.findByBarberAndDate(barberId, date)
+    
+    console.log('  Agendamentos existentes:', existingBookings.length)
+    existingBookings.forEach((booking, index) => {
+      console.log(`    ${index + 1}. ${booking.startTime} - ${booking.endTime} (${booking.status})`)
+    })
     
     const conflictingBookings = existingBookings.filter(booking => {
       if (excludeBookingId && booking.id.toString() === excludeBookingId) {
         return false
       }
       
-      return this.isTimeOverlapping(
+      const isOverlapping = this.isTimeOverlapping(
         startTime,
         endTime,
         booking.startTime,
         booking.endTime
       )
+      
+      if (isOverlapping) {
+        console.log(`    ⚠️ Conflito com agendamento: ${booking.startTime} - ${booking.endTime}`)
+      }
+      
+      return isOverlapping
     })
+
+    console.log('  Conflitos encontrados:', conflictingBookings.length)
+    console.log('  Barbeiro disponível?', conflictingBookings.length === 0)
 
     return conflictingBookings.length === 0
   }
@@ -249,8 +281,16 @@ export class BookingService {
       minutes
     )
 
+    console.log('🔍 Debug validateTimeSlot:')
+    console.log('  Data recebida:', date)
+    console.log('  Horário:', startTime)
+    console.log('  Data/hora do agendamento:', bookingDateTime)
+    console.log('  Data/hora atual:', now)
+    console.log('  É no passado?', bookingDateTime < now)
+
     // Não permitir agendamentos no passado
     if (bookingDateTime < now) {
+      console.log('  ❌ Falhou: Agendamento no passado')
       return false
     }
 
@@ -258,15 +298,21 @@ export class BookingService {
     const startMinutes = this.timeToMinutes(startTime)
     const endMinutes = this.timeToMinutes(endTime)
 
+    console.log('  Start minutes:', startMinutes, '(mínimo: 480)')
+    console.log('  End minutes:', endMinutes, '(máximo: 1080)')
+
     if (startMinutes < 8 * 60 || endMinutes > 18 * 60) {
+      console.log('  ❌ Falhou: Fora do horário de funcionamento')
       return false
     }
 
     // Validar se o horário de fim é depois do início
     if (endMinutes <= startMinutes) {
+      console.log('  ❌ Falhou: Horário de fim deve ser depois do início')
       return false
     }
 
+    console.log('  ✅ Validação passou!')
     return true
   }
 
