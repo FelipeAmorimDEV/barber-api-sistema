@@ -1,4 +1,4 @@
-@baseUrl = http://localhost:3334
+@baseUrl = https://barber-api-sistema.onrender.com
 @contentType = application/json
 
 
@@ -19,8 +19,8 @@ POST {{baseUrl}}/users
 Content-Type: {{contentType}}
 
 {
-  "name": "Carlos Barbeiro",
-  "email": "carlos1@barber.com",
+  "name": "João Santos",
+  "email": "carlos12@barber.com",
   "password": "123456",
   "role": "BARBER"
 }
@@ -63,7 +63,7 @@ POST {{baseUrl}}/clients
 Content-Type: {{contentType}}
 
 {
-  "userId": "{{userId}}",
+  "userId": "a6cbf09d-9e21-409c-acdb-65b896d231f6",
   "phone": "11999999999",
   "birthDate": "1990-05-15T00:00:00Z"
 }
@@ -95,7 +95,7 @@ POST {{baseUrl}}/barbers
 Content-Type: {{contentType}}
 
 {
-  "userId": "e7878c94-e6ff-424a-aa41-106d9d71dd9a",
+  "userId": "a4881455-4a78-450e-b17b-0541bcdb4c78",
   "phone": "11977777777",
   "specialties": "Corte, Barba, Sobrancelha",
   "isActive": true
@@ -151,11 +151,12 @@ POST {{baseUrl}}/services
 Content-Type: {{contentType}}
 
 {
-  "name": "Corte Masculino",
+  "name": "Combo Masculino",
   "description": "Corte tradicional masculino com tesoura e máquina",
-  "duration": 30,
-  "price": 25.00,
-  "barberId": "e7878c94-e6ff-424a-aa41-106d9d71dd9a",
+  "duration": 50,
+  "price": 50.00,
+  "barberId": "478808ec-e82a-4002-817d-4843b4183786",
+  "category": "combo",
   "isActive": true
 }
 
@@ -258,7 +259,7 @@ POST {{baseUrl}}/bookings/{{bookingId}}/confirm
 POST {{baseUrl}}/bookings/{{bookingId}}/cancel
 
 ### Marcar agendamento como concluído
-POST {{baseUrl}}/bookings/{{bookingId}}/complete
+POST {{baseUrl}}/bookings/a87667c8-f88e-4112-8364-855f6406d2e2/complete
 
 ### Verificar disponibilidade do barbeiro
 POST {{baseUrl}}/bookings/check-availability
@@ -287,14 +288,15 @@ DELETE {{baseUrl}}/bookings/{{bookingId}}
 # AVALIAÇÕES
 # ===========================================
 
-### Criar avaliação
+### Criar avaliação  clientId: 'a6cbf09d-9e21-409c-acdb-65b896d231f6',
+
 POST {{baseUrl}}/reviews
 Content-Type: {{contentType}}
 
 {
-  "clientId": "{{clientId}}",
-  "barberId": "{{barberId}}",
-  "bookingId": "{{bookingId}}",
+  "clientId": "a6cbf09d-9e21-409c-acdb-65b896d231f6",
+  "barberId": "478808ec-e82a-4002-817d-4843b4183786",
+  "bookingId": "08a4a09c-10ae-4c9d-9a0e-526b8d0ee2a6",
   "rating": 5,
   "comment": "Excelente atendimento! Corte perfeito e muito profissional."
 }
@@ -512,6 +514,20 @@ Content-Type: {{contentType}}
   "startTime": "06:00",
   "endTime": "06:30",
   "notes": "Horário inválido"
+}
+
+### Teste: Agendamento para 2025-09-12 às 13:00 (deve funcionar)
+POST {{baseUrl}}/bookings
+Content-Type: {{contentType}}
+
+{
+  "clientId": "{{clientId}}",
+  "barberId": "478808ec-e82a-4002-817d-4843b4183786",
+  "serviceId": "1c02b48f-b502-4b0c-a9f7-14f3743b8691",
+  "date": "2025-09-12",
+  "startTime": "13:00",
+  "endTime": "13:50",
+  "notes": "Teste de agendamento futuro"
 }
 
 ### Teste: Rating inválido (fora do range 1-5)

@@ -235,10 +235,18 @@ export class BookingService {
 
   private validateTimeSlot(date: Date, startTime: string, endTime: string): boolean {
     const now = new Date()
-    const bookingDateTime = new Date(date)
-    bookingDateTime.setHours(
-      parseInt(startTime.split(':')[0]),
-      parseInt(startTime.split(':')[1])
+    
+    // Criar a data do agendamento no fuso horário local
+    const bookingDate = new Date(date)
+    const [hours, minutes] = startTime.split(':').map(Number)
+    
+    // Criar a data/hora do agendamento combinando a data com o horário
+    const bookingDateTime = new Date(
+      bookingDate.getFullYear(),
+      bookingDate.getMonth(),
+      bookingDate.getDate(),
+      hours,
+      minutes
     )
 
     // Não permitir agendamentos no passado
