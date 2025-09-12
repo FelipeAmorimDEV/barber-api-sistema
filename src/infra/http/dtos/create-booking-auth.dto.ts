@@ -5,7 +5,14 @@ import { ApiProperty } from '@nestjs/swagger'
 export const createBookingAuthSchema = z.object({
   barberId: z.string().uuid('ID do barbeiro inválido'),
   serviceId: z.string().uuid('ID do serviço inválido'),
-  date: z.string().datetime().transform((str) => new Date(str)),
+  date: z.string().transform((str) => {
+    // Aceitar tanto formato de data (YYYY-MM-DD) quanto datetime (ISO 8601)
+    if (str.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      // Formato de data simples, adicionar horário 00:00:00
+      return new Date(str + 'T00:00:00')
+    }
+    return new Date(str)
+  }),
   startTime: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, 'Formato de horário inválido (HH:MM)'),
   endTime: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, 'Formato de horário inválido (HH:MM)'),
   status: z.enum(['PENDING', 'CONFIRMED', 'CANCELLED', 'COMPLETED']).default('PENDING'),
