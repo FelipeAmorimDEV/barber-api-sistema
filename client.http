@@ -530,6 +530,20 @@ Content-Type: {{contentType}}
   "notes": "Teste de agendamento futuro"
 }
 
+### Teste: Agendamento para hoje às 15:00 (deve funcionar se for depois das 15h)
+POST {{baseUrl}}/bookings
+Content-Type: {{contentType}}
+
+{
+  "clientId": "{{clientId}}",
+  "barberId": "478808ec-e82a-4002-817d-4843b4183786",
+  "serviceId": "1c02b48f-b502-4b0c-a9f7-14f3743b8691",
+  "date": "2024-12-15",
+  "startTime": "15:00",
+  "endTime": "15:50",
+  "notes": "Teste de agendamento para hoje"
+}
+
 ### Teste: Rating inválido (fora do range 1-5)
 POST {{baseUrl}}/reviews
 Content-Type: {{contentType}}

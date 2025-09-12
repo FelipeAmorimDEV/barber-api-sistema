@@ -269,14 +269,13 @@ export class BookingService {
     const now = new Date()
     
     // Criar a data do agendamento no fuso horário local
-    const bookingDate = new Date(date)
     const [hours, minutes] = startTime.split(':').map(Number)
     
     // Criar a data/hora do agendamento combinando a data com o horário
     const bookingDateTime = new Date(
-      bookingDate.getFullYear(),
-      bookingDate.getMonth(),
-      bookingDate.getDate(),
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate(),
       hours,
       minutes
     )
@@ -287,9 +286,11 @@ export class BookingService {
     console.log('  Data/hora do agendamento:', bookingDateTime)
     console.log('  Data/hora atual:', now)
     console.log('  É no passado?', bookingDateTime < now)
+    console.log('  Diferença em minutos:', (bookingDateTime.getTime() - now.getTime()) / (1000 * 60))
 
-    // Não permitir agendamentos no passado
-    if (bookingDateTime < now) {
+    // Não permitir agendamentos no passado (com margem de 1 minuto)
+    const oneMinuteAgo = new Date(now.getTime() - 60000)
+    if (bookingDateTime < oneMinuteAgo) {
       console.log('  ❌ Falhou: Agendamento no passado')
       return false
     }
