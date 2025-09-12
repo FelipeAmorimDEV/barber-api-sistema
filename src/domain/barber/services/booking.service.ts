@@ -268,10 +268,10 @@ export class BookingService {
   private validateTimeSlot(date: Date, startTime: string, endTime: string): boolean {
     const now = new Date()
     
-    // Criar a data do agendamento no fuso horário local
+    // Criar a data do agendamento no fuso horário do Brasil (UTC-3)
     const [hours, minutes] = startTime.split(':').map(Number)
     
-    // Criar a data/hora do agendamento combinando a data com o horário
+    // Criar a data/hora do agendamento no fuso horário do Brasil
     const bookingDateTime = new Date(
       date.getFullYear(),
       date.getMonth(),
@@ -280,27 +280,34 @@ export class BookingService {
       minutes
     )
 
+    // Converter para UTC para comparação com o servidor
+    // Brasil é UTC-3, então adicionamos 3 horas para converter para UTC
+    const brazilToUTC = 3 * 60 * 60 * 1000 // 3 horas em milissegundos
+    const bookingDateTimeUTC = new Date(bookingDateTime.getTime() + brazilToUTC)
+
     console.log('🔍 Debug validateTimeSlot:')
-    console.log('  Data recebida:', date)
-    console.log('  Horário:', startTime)
-    console.log('  Data/hora do agendamento:', bookingDateTime)
-    console.log('  Data/hora atual:', now)
-    console.log('  É no passado?', bookingDateTime < now)
-    console.log('  Diferença em minutos:', (bookingDateTime.getTime() - now.getTime()) / (1000 * 60))
+    console.log('  Data recebida (Brasil):', date)
+    console.log('  Horário (Brasil):', startTime)
+    console.log('  Data/hora do agendamento (Brasil):', bookingDateTime)
+    console.log('  Data/hora do agendamento (UTC):', bookingDateTimeUTC)
+    console.log('  Data/hora atual (servidor):', now)
+    console.log('  É no passado?', bookingDateTimeUTC < now)
+    console.log('  Diferença em minutos:', (bookingDateTimeUTC.getTime() - now.getTime()) / (1000 * 60))
 
     // Não permitir agendamentos no passado (com margem de 1 minuto)
     const oneMinuteAgo = new Date(now.getTime() - 60000)
-    if (bookingDateTime < oneMinuteAgo) {
+    if (bookingDateTimeUTC < oneMinuteAgo) {
       console.log('  ❌ Falhou: Agendamento no passado')
       return false
     }
 
     // Validar horário de funcionamento (8h às 18h, não incluindo 18h)
+    // Usar o horário do Brasil para validação
     const startMinutes = this.timeToMinutes(startTime)
     const endMinutes = this.timeToMinutes(endTime)
 
-    console.log('  Start minutes:', startMinutes, '(mínimo: 480)')
-    console.log('  End minutes:', endMinutes, '(máximo: 1080)')
+    console.log('  Start minutes (Brasil):', startMinutes, '(mínimo: 480)')
+    console.log('  End minutes (Brasil):', endMinutes, '(máximo: 1080)')
 
     if (startMinutes < 8 * 60 || endMinutes > 18 * 60) {
       console.log('  ❌ Falhou: Fora do horário de funcionamento')

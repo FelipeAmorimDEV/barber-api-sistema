@@ -8,9 +8,11 @@ export const createBookingAuthSchema = z.object({
   date: z.string().transform((str) => {
     // Aceitar tanto formato de data (YYYY-MM-DD) quanto datetime (ISO 8601)
     if (str.match(/^\d{4}-\d{2}-\d{2}$/)) {
-      // Formato de data simples - criar data no horário local
+      // Formato de data simples - criar data no fuso horário do Brasil (UTC-3)
       const [year, month, day] = str.split('-').map(Number)
-      return new Date(year, month - 1, day) // month é 0-indexed
+      // Criar data no horário do Brasil (UTC-3)
+      const brazilDate = new Date(year, month - 1, day)
+      return brazilDate
     }
     return new Date(str)
   }),

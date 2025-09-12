@@ -544,6 +544,34 @@ Content-Type: {{contentType}}
   "notes": "Teste de agendamento para hoje"
 }
 
+### Teste: Agendamento para 2025-09-12 às 13:00 (Brasil) - Deve funcionar agora
+POST {{baseUrl}}/bookings
+Content-Type: {{contentType}}
+
+{
+  "clientId": "{{clientId}}",
+  "barberId": "478808ec-e82a-4002-817d-4843b4183786",
+  "serviceId": "1c02b48f-b502-4b0c-a9f7-14f3743b8691",
+  "date": "2025-09-12",
+  "startTime": "13:00",
+  "endTime": "13:50",
+  "notes": "Teste de agendamento futuro - Brasil 13h"
+}
+
+### Teste: Agendamento para amanhã às 14:00 (Brasil) - Deve funcionar
+POST {{baseUrl}}/bookings
+Content-Type: {{contentType}}
+
+{
+  "clientId": "{{clientId}}",
+  "barberId": "478808ec-e82a-4002-817d-4843b4183786",
+  "serviceId": "1c02b48f-b502-4b0c-a9f7-14f3743b8691",
+  "date": "2024-12-16",
+  "startTime": "14:00",
+  "endTime": "14:50",
+  "notes": "Teste de agendamento amanhã - Brasil 14h"
+}
+
 ### Teste: Rating inválido (fora do range 1-5)
 POST {{baseUrl}}/reviews
 Content-Type: {{contentType}}
