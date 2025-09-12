@@ -51,6 +51,7 @@ export class PrismaBookingRepository implements BookingRepository {
   async findByClientId(clientId: string, params: { page: number }): Promise<Booking[]> {
     const bookings = await this.prisma.booking.findMany({
       where: { clientId },
+      orderBy: { createdAt: 'desc' },
       skip: (params.page - 1) * 20,
       take: 20,
       include: {
