@@ -67,6 +67,11 @@ export class AuthService {
   async login(loginDto: LoginDto) {
     const { email, password } = loginDto;
 
+    // Validar se os dados estão presentes
+    if (!email || !password) {
+      throw new UnauthorizedException('Email e senha são obrigatórios');
+    }
+
     // Buscar usuário
     const user = await this.prisma.user.findUnique({
       where: { email },
