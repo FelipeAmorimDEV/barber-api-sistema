@@ -318,4 +318,78 @@ export class BookingController {
       throw result.value
     }
   }
+
+  @Get('barber/today')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Listar agendamentos de hoje do barbeiro autenticado' })
+  @ApiResponse({ status: 200, description: 'Lista de agendamentos de hoje' })
+  async getTodayBookings(@Request() req) {
+    const barberId = req.user.barber.id
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    
+    const tomorrow = new Date(today)
+    tomorrow.setDate(tomorrow.getDate() + 1)
+
+    const bookings = await this.bookingService.findBookingsByDateRange(today, tomorrow)
+    
+    // Filtrar apenas agendamentos do barbeiro autenticado
+    const barberBookings = bookings.filter(booking => booking.barberId === barberId)
+
+    // Buscar dados relacionados para cada booking
+    const bookingsWithRelations = await Promise.all(
+      barberBookings.map(async (booking) => {
+        // Buscar dados do cliente
+        const client = await this.prisma.client.findUnique({
+          where: { id: booking.clientId },
+          include: { user: true }
+        })
+
+        // Buscar dados do serviço
+        const service = await this.prisma.service.findUnique({
+          where: { id: booking.serviceId }
+        })
+
+        return {
+          id: booking.id.toString(),
+          clientId: booking.clientId,
+          barberId: booking.barberId,
+          serviceId: booking.serviceId,
+          date: booking.date,
+          startTime: booking.startTime,
+          endTime: booking.endTime,
+          status: booking.status,
+          notes: booking.notes,
+          createdAt: booking.createdAt,
+          client: client ? {
+            id: client.id,
+            userId: client.userId,
+            phone: client.phone,
+            user: {
+              id: client.user.id,
+              name: client.user.name,
+              email: client.user.email,
+              avatar: client.user.avatar
+            }
+          } : null,
+          service: service ? {
+            id: service.id,
+            name: service.name,
+            description: service.description,
+            duration: service.duration,
+            price: service.price,
+            isActive: service.isActive,
+            barberId: service.barberId,
+            createdAt: service.createdAt,
+            updatedAt: service.updatedAt
+          } : null,
+        }
+      })
+    )
+
+    return {
+      bookings: bookingsWithRelations
+    }
+  }
 }
