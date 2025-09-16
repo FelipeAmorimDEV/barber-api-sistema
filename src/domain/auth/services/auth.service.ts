@@ -82,33 +82,55 @@ export class AuthService {
       throw new UnauthorizedException('Credenciais inválidas');
     }
 
-    // Buscar cliente associado
-    const client = await this.prisma.client.findFirst({
-      where: { userId: user.id },
-    });
-
-    if (!client) {
-      throw new UnauthorizedException('Cliente não encontrado');
-    }
-
     // Gerar JWT
-    const payload = { sub: user.id, email: user.email };
+    const payload = { sub: user.id, email: user.email, role: user.role };
     const token = this.jwtService.sign(payload);
 
-    return {
+    const response: any = {
       user: {
         id: user.id,
         name: user.name,
         email: user.email,
         avatar: user.avatar,
-      },
-      client: {
-        id: client.id,
-        userId: client.userId,
-        phone: client.phone,
+        role: user.role,
       },
       token,
     };
+
+    // Buscar perfil baseado no role do usuário
+    if (user.role === 'CLIENT') {
+      const client = await this.prisma.client.findFirst({
+        where: { userId: user.id },
+      });
+
+      if (!client) {
+        throw new UnauthorizedException('Perfil de cliente não encontrado');
+      }
+
+      response.client = {
+        id: client.id,
+        userId: client.userId,
+        phone: client.phone,
+      };
+    } else if (user.role === 'BARBER') {
+      const barber = await this.prisma.barber.findFirst({
+        where: { userId: user.id },
+      });
+
+      if (!barber) {
+        throw new UnauthorizedException('Perfil de barbeiro não encontrado');
+      }
+
+      response.barber = {
+        id: barber.id,
+        userId: barber.userId,
+        phone: barber.phone,
+        specialties: barber.specialties,
+        isActive: barber.isActive,
+      };
+    }
+
+    return response;
   }
 
   async validateUser(userId: string) {
@@ -120,26 +142,49 @@ export class AuthService {
       throw new UnauthorizedException('Usuário não encontrado');
     }
 
-    const client = await this.prisma.client.findFirst({
-      where: { userId: user.id },
-    });
-
-    if (!client) {
-      throw new UnauthorizedException('Cliente não encontrado');
-    }
-
-    return {
+    const response: any = {
       user: {
         id: user.id,
         name: user.name,
         email: user.email,
         avatar: user.avatar,
+        role: user.role,
       },
-      client: {
+    };
+
+    // Buscar perfil baseado no role do usuário
+    if (user.role === 'CLIENT') {
+      const client = await this.prisma.client.findFirst({
+        where: { userId: user.id },
+      });
+
+      if (!client) {
+        throw new UnauthorizedException('Perfil de cliente não encontrado');
+      }
+
+      response.client = {
         id: client.id,
         userId: client.userId,
         phone: client.phone,
-      },
-    };
+      };
+    } else if (user.role === 'BARBER') {
+      const barber = await this.prisma.barber.findFirst({
+        where: { userId: user.id },
+      });
+
+      if (!barber) {
+        throw new UnauthorizedException('Perfil de barbeiro não encontrado');
+      }
+
+      response.barber = {
+        id: barber.id,
+        userId: barber.userId,
+        phone: barber.phone,
+        specialties: barber.specialties,
+        isActive: barber.isActive,
+      };
+    }
+
+    return response;
   }
 }
